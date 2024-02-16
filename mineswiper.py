@@ -275,7 +275,7 @@ def jogada(Lin, Col, Tab):
 def str_para_coord(Str):
     if(
        ord(Str[-1]) >= 97 
-       or ord(Str[-1]) <= 122
+       and ord(Str[-1]) <= 122
        ):
         return (int(Str[:-1]), int(ord(Str[-1])-96))
     else:
@@ -294,7 +294,7 @@ def comeca_jogo():
           \n\t  *\.  ______________________________________________________  ./*\
           \n\t   *\.________________________________________________________./*\
           \n\t        *\---------------______/|*º*|\______--------------/* \n\n\
-          \t\t\t.__________________________________.\
+          \t\t.__________________________________.\
           \n\t\t\t |        _ ___ _     _  _  _  _  |\
           \n\t\t\t|  | |\ |(_  | |_)| ||  | ||_ (_   |\
           \n\t\t\t|  | | \| _) | |\ |_||_ |_||_  _)  |\
@@ -351,9 +351,14 @@ def jogo(Tab):
                     Tab[(Coord[0], Coord[1])] = [Atributos[0]] + [por_ver()] + [Atributos[2]]
                     jogo(Tab)
                 else:
-                    Atributos = obtem_atributos(Coord[0], Coord[1], Tab)
-                    Tab[(Coord[0], Coord[1])] = [Atributos[0]] + [bandeira()] + [Atributos[2]]
-                    jogo(Tab)
+                    if verifica_por_ver(obtem_estado(Coord[0], Coord[1], Tab)):
+                        Atributos = obtem_atributos(Coord[0], Coord[1], Tab)
+                        Tab[(Coord[0], Coord[1])] = [Atributos[0]] + [bandeira()] + [Atributos[2]]
+                        jogo(Tab)
+                    else:
+                        print("coordenada não valida")
+                        jogo(Tab)
+
 
             else:
                 try:

@@ -996,7 +996,7 @@ def coord_rainha_possiv(Lin, Col, Tab):
     return coord_bispo_possiv(Lin, Col, Tab) + coord_torre_possiv(Lin, Col, Tab)
 
 
-def coord_rei_possiv(Lin, Col, Tab):
+def coord_rei_possiv_sem_check(Lin, Col, Tab):
     List_coord = obtem_vizinhanca(Lin, Col)
     Cor = obtem_cor(Lin, Col, Tab)
     List_aux = []
@@ -1011,46 +1011,6 @@ def coord_rei_possiv(Lin, Col, Tab):
                 List_aux += [coord]
 
     return  List_aux
-
-
-def verif_king_rook_esq(Lin, Col, Tab):
-    List_aux = []
-
-    if(
-       verifica_por_mover(obtem_estado(Lin, Col, Tab)) 
-       and verifica_torre(obtem_peca(Lin, 1, Tab)) 
-       and verifica_por_mover(obtem_estado(Lin, 1, Tab))
-       ):
-        cond = 1
-        for ind_col in range(2, Col):
-            if verifica_vazio(obtem_atributos(Lin, ind_col, Tab)):
-                cond *= 1
-            else:
-                cond *= 0
-        if cond == 1:
-            List_aux += [(Lin,3)]
-    return List_aux
-    
-    
-def verif_king_rook_dir(Lin, Col, Tab):
-    List_aux = []    
-    
-    if(
-       verifica_por_mover(obtem_estado(Lin, Col, Tab)) 
-       and verifica_torre(obtem_peca(Lin, 8, Tab)) 
-       and verifica_por_mover(obtem_estado(Lin, 8, Tab))
-       ):
-        cond = 1
-        for ind_col in range(Col + 1, 8):
-            if verifica_vazio(obtem_atributos(Lin, ind_col, Tab)):
-                cond *= 1
-            else:
-                cond *= 0
-        if cond == 1:
-            List_aux += [(Lin,7)]
-
-    return List_aux
-
 
 
 def coord_peao_possiv(Lin, Col, Tab):
@@ -1083,7 +1043,7 @@ def coord_peao_possiv(Lin, Col, Tab):
     return List_aux
 
 
-def veri_En_passant(Lin, Col, Tab):
+def coord_En_passant_possi(Lin, Col, Tab):
     List_aux = []
     Cor = obtem_cor(Lin, Col, Tab)
 
@@ -1112,7 +1072,7 @@ def veri_En_passant(Lin, Col, Tab):
     return List_aux
 
 
-def veri_prim_peao(Lin, Col, Tab):
+def coord_prim_peao_possi(Lin, Col, Tab):
     List_aux = []
 
     if verifica_por_mover(obtem_estado(Lin, Col, Tab)):
@@ -1129,13 +1089,212 @@ def veri_prim_peao(Lin, Col, Tab):
 
     return List_aux
 
+#-------------------------------------------------------------------------------
+
+def coord_bispo_possiv_para_check(Lin: int, Col:int, Tab: dict) -> list:
+    Coord_diag = obtem_diag(Lin, Col)
+    todas_coord = obtem_coord_pecas(Tab)
+    Cor = obtem_cor(Lin, Col, Tab)
+    inf_esq = Coord_diag[0]
+    inf_dir = Coord_diag[1]
+    sup_esq = Coord_diag[2]
+    sup_dir = Coord_diag[3]
+
+    for coord in todas_coord:
+        List_aux = []
+        Cond = True
+        Lin_aux = coord[0]
+        Col_aux = coord[1]
+
+        if coord in inf_esq:
+            if Lin_aux != 8 or Col_aux != 1:
+                while Cond:
+                    if( 
+                        Col_aux == 1
+                        or Lin_aux == 8
+                        ):
+                        Cond = False
+                    else:
+                        Col_aux -= 1
+                        Lin_aux += 1 
+                        List_aux += [(Lin_aux, Col_aux)]
+            for coord_aux in List_aux:
+                if coord_aux in inf_esq:
+                    inf_esq.remove(coord_aux)
+
+        elif coord in inf_dir:
+            if Lin_aux != 8 or Col_aux != 8:
+                while Cond:
+                    if( 
+                        Col_aux == 8
+                        or Lin_aux == 8
+                        ):
+                        Cond = False
+                    else:
+                        Col_aux -= 1
+                        Lin_aux += 1 
+                        List_aux += [(Lin_aux, Col_aux)]
+            for coord_aux in List_aux:
+                if coord_aux in inf_dir:
+                    inf_dir.remove(coord_aux)
+
+        elif coord in sup_esq:
+            if Lin_aux != 1 or Col_aux != 1:
+                while Cond:
+                    if( 
+                        Col_aux == 1
+                        or Lin_aux == 1
+                        ):
+                        Cond = False
+                    else:
+                        Col_aux -= 1
+                        Lin_aux += 1 
+                        List_aux += [(Lin_aux, Col_aux)]
+            for coord_aux in List_aux:
+                if coord_aux in sup_esq: 
+                    sup_esq.remove(coord_aux)
+
+        elif coord in sup_dir:
+            if Lin_aux != 1 or Col_aux != 8:
+                while Cond:
+                    if( 
+                        Col_aux == 8
+                        or Lin_aux == 1
+                        ):
+                        Cond = False
+                    else:
+                        Col_aux -= 1
+                        Lin_aux += 1 
+                        List_aux += [(Lin_aux, Col_aux)]
+            for coord_aux in List_aux:
+                if coord_aux in sup_dir:
+                    sup_dir.remove(coord_aux)
+
+        else:
+            pass
+    
+    return inf_esq + inf_dir + sup_esq + sup_dir
 
 
+def coord_torre_possiv_para_check(Lin: int, Col:int, Tab: dict) -> list:
+    Coord_hori_vert = obtem_hori_vert(Lin, Col)
+    todas_coord = obtem_coord_pecas(Tab)
+    Cor = obtem_cor(Lin, Col, Tab)
+    hor_esq = Coord_hori_vert[0]
+    hor_dir = Coord_hori_vert[1]
+    ver_bai = Coord_hori_vert[2]
+    ver_cim = Coord_hori_vert[3]
 
-# def jogada_legal(Lin_in, Col_in, Lin_jog, Col_jog, Tab) -> bool: 
-Tab = {(1, 1): ['torre', 'preto', 'por mover'], (1, 2): ['bispo', 'preto', 'por mover'], (1, 3): ['cavalo', 'preto', 'por mover'], (1, 4): ['rainha', 'preto', 'por mover'], (1, 5): ['rei', 'preto', 'por mover'], (1, 6): ['cavalo', 'preto', 'por mover'], (1, 7): ['bispo', 'preto', 'por mover'], (1, 8): ['torre', 'preto', 'por mover'], (2, 1): ['peao', 'preto', 'por mover'], (2, 2): ['peao', 'preto', 'por mover'], (2, 3): ['peao', 'preto', 'por mover'], (2, 4): ['peao', 'preto', 'por mover'], (2, 5): ['peao', 'preto', 'por mover'], (2, 6): ['peao', 'preto', 'por mover'], (2, 7): ['peao', 'preto', 'por mover'], (2, 8): ['peao', 'preto', 'por mover'], (3, 1): 'vazio', (3, 2): 'vazio', (3, 3): 'vazio', (3, 4): 'vazio', (3, 5): 'vazio', (3, 6): 'vazio', (3, 7): 'vazio', (3, 8): 'vazio', (4, 1): 'vazio', (4, 2): 'vazio', (4, 3): 'vazio', (4, 4): 'vazio', (4, 5): ['torre', 'preto', 'por mover'], (4, 6): 'vazio', (4, 7): 'vazio', (4, 8): 'vazio', (5, 1): 'vazio', (5, 2): 'vazio', (5, 3): 'vazio', (5, 4): 'vazio', (5, 5): 'vazio', (5, 6): 'vazio', (5, 7): ['peao', 'branco', 'movido uma vez'], (5, 8): ['peao', 'preto', 'movido uma vez'], (6, 1): 'vazio', (6, 2): 'vazio', (6, 3): 'vazio', (6, 4): 'vazio', (6, 5): 'vazio', (6, 6): 'vazio', (6, 7): 'vazio', (6, 8): 'vazio', (7, 1): ['peao', 'branco', 'por mover'], (7, 2): ['peao', 'branco', 'por mover'], (7, 3): ['peao', 'branco', 'por mover'], (7, 4): ['peao', 'branco', 'por mover'], (7, 5): 'vazio', (7, 6): ['peao', 'branco', 'por mover'], (7, 7): ['peao', 'branco', 'por mover'], (7, 8): ['peao', 'branco', 'por mover'], (8, 1): ['torre', 'branco', 'por mover'], (8, 2): 'vazio', (8, 3): 'vazio', (8, 4): 'vazio', (8, 5): ['rei', 'branco', 'por mover'], (8, 6): 'vazio', (8, 7): 'vazio', (8, 8): ['torre', 'branco', 'por mover']}
-print(Tab_para_str(Tab))
-print(coord_peao_possiv(5, 7, Tab))
-print(veri_En_passant(5, 7, Tab))
-print(veri_prim_peao(5, 7, Tab))
-print(veri_prim_peao(7, 1, Tab))
+    for coord in todas_coord:
+        List_aux = []
+        Lin_aux = coord[0]
+        Col_aux = coord[1]
+
+        if coord in hor_esq:
+            for ind_col in range(1, Col_aux):
+                List_aux += [(Lin_aux, ind_col)]
+            for coord_aux in List_aux:
+                if coord_aux in hor_esq:
+                    hor_esq.remove(coord_aux)
+
+        elif coord in hor_dir:
+            for ind_col in range(Col_aux + 1, 9):
+                List_aux += [(Lin_aux, ind_col)]
+            for coord_aux in List_aux:
+                if coord_aux in hor_dir:
+                    hor_dir.remove(coord_aux)
+
+        elif coord in ver_bai:
+            for ind_lin in range(1, Lin_aux):
+                List_aux += [(ind_lin, Col_aux)]
+            for coord_aux in List_aux:
+                if coord_aux in ver_bai:
+                    ver_bai.remove(coord_aux)
+
+        elif coord in ver_cim:
+            for ind_lin in range(Lin_aux + 1, 9):
+                List_aux += [(ind_lin, Col_aux)]
+            for coord_aux in List_aux:
+                if coord_aux in ver_cim:
+                    ver_cim.remove(coord_aux)
+
+        else:
+            pass
+    
+    return hor_esq + hor_dir + ver_bai + ver_cim
+
+
+def coord_rainha_possiv_para_check(Lin, Col, Tab):
+    return coord_bispo_possiv_para_check(Lin, Col, Tab) + coord_torre_possiv_para_check(Lin, Col, Tab)
+
+#----------------------------------------------------------------------------------
+
+def posicoes_check(Cor: str, Tab: dict) -> list:
+    Lista_final = []
+
+    for lin in range(1,9):
+        for col in range(1,9):
+            if not(verifica_vazio(obtem_atributos(lin, col, Tab))):
+                if obtem_cor(lin, col, Tab) != Cor:
+                    if verifica_peao(obtem_peca(lin, col, Tab)):
+                        if verifica_preto(Cor):
+                            Lista_final += obtem_movi_peao_come_jogador_branco(lin, col)
+                        else:
+                            Lista_final += obtem_movi_peao_come_jogador_preto(lin, col)
+                    elif verifica_torre(obtem_peca(lin, col, Tab)):
+                        Lista_final += coord_torre_possiv_para_check(lin, col, Tab)
+                    elif verifica_cavalo(obtem_peca(lin, col, Tab)):
+                        Lista_final += obtem_casas_em_L(lin, col)
+                    elif verifica_bispo(obtem_peca(lin, col, Tab)):
+                        Lista_final += coord_bispo_possiv_para_check(lin, col, Tab)
+                    elif verifica_rei(obtem_peca(lin, col, Tab)):
+                        Lista_final += coord_rei_possiv_sem_check(lin, col, Tab)  
+                    else:
+                        Lista_final += coord_rainha_possiv_para_check(lin, col, Tab)
+
+    return Lista_final
+
+
+def verif_king_rook_esq(Lin, Col, Tab): # adicionar verificação de check
+    List_aux = []
+    Cor = obtem_cor(Lin, Col, Tab)
+    List_posi_check = posicoes_check
+
+    if(
+       verifica_por_mover(obtem_estado(Lin, Col, Tab)) 
+       and verifica_torre(obtem_peca(Lin, 1, Tab)) 
+       and verifica_por_mover(obtem_estado(Lin, 1, Tab))
+       ):
+        cond = 1
+        for ind_col in range(2, Col):
+            if verifica_vazio(obtem_atributos(Lin, ind_col, Tab)):
+                cond *= 1
+            else:
+                cond *= 0
+        if cond == 1:
+            List_aux += [(Lin,3)]
+    return List_aux
+    
+    
+def verif_king_rook_dir(Lin, Col, Tab): # adicionar verificação de check
+    List_aux = []    
+    
+    if(
+       verifica_por_mover(obtem_estado(Lin, Col, Tab)) 
+       and verifica_torre(obtem_peca(Lin, 8, Tab)) 
+       and verifica_por_mover(obtem_estado(Lin, 8, Tab))
+       ):
+        cond = 1
+        for ind_col in range(Col + 1, 8):
+            if verifica_vazio(obtem_atributos(Lin, ind_col, Tab)):
+                cond *= 1
+            else:
+                cond *= 0
+        if cond == 1:
+            List_aux += [(Lin,7)]
+
+    return List_aux
+
+# print(adiciona_pecas_tab(cria_tab()))
+# print(Tab_para_str({(1, 1): ['torre', 'preto', 'por mover'], (1, 2): ['bispo', 'preto', 'por mover'], (1, 3): ['cavalo', 'preto', 'por mover'], (1, 4): ['rainha', 'preto', 'por mover'], (1, 5): ['rei', 'preto', 'por mover'], (1, 6): ['cavalo', 'preto', 'por mover'], (1, 7): ['bispo', 'preto', 'por mover'], (1, 8): ['torre', 'preto', 'por mover'], (2, 1): ['peao', 'preto', 'por mover'], (2, 2): ['peao', 'preto', 'por mover'], (2, 3): ['peao', 'preto', 'por mover'], (2, 4): ['peao', 'preto', 'por mover'], (2, 5): ['peao', 'preto', 'por mover'], (2, 6): ['peao', 'preto', 'por mover'], (2, 7): ['peao', 'preto', 'por mover'], (2, 8): ['peao', 'preto', 'por mover'], (3, 1): 'vazio', (3, 2): 'vazio', (3, 3): 'vazio', (3, 4): 'vazio', (3, 5): ['torre', 'preto', 'por mover'], (3, 6): 'vazio', (3, 7): 'vazio', (3, 8): 'vazio', (4, 1): 'vazio', (4, 2): 'vazio', (4, 3): 'vazio', (4, 4): 'vazio', (4, 5): 'vazio', (4, 6): 'vazio', (4, 7): 'vazio', (4, 8): 'vazio', (5, 1): 'vazio', (5, 2): 'vazio', (5, 3): 'vazio', (5, 4): 'vazio', (5, 5): 'vazio', (5, 6): 'vazio', (5, 7): 'vazio', (5, 8): 'vazio', (6, 1): 'vazio', (6, 2): 'vazio', (6, 3): 'vazio', (6, 4): 'vazio', (6, 5): 'vazio', (6, 6): 'vazio', (6, 7): 'vazio', (6, 8): 'vazio', (7, 1): ['peao', 'branco', 'por mover'], (7, 2): ['peao', 'branco', 'por mover'], (7, 3): ['peao', 'branco', 'por mover'], (7, 4): ['peao', 'branco', 'por mover'], (7, 5): 'vazio', (7, 6): ['peao', 'branco', 'por mover'], (7, 7): ['peao', 'branco', 'por mover'], (7, 8): ['peao', 'branco', 'por mover'], (8, 1): ['torre', 'branco', 'por mover'], (8, 2): ['bispo', 'branco', 'por mover'], (8, 3): ['cavalo', 'branco', 'por mover'], (8, 4): ['rainha', 'branco', 'por mover'], (8, 5): ['rei', 'branco', 'por mover'], (8, 6): ['cavalo', 'branco', 'por mover'], (8, 7): ['bispo', 'branco', 'por mover'], (8, 8): ['torre', 'branco', 'por mover']}))
+print(posicoes_check(branco(), {(1, 1): ['torre', 'preto', 'por mover'], (1, 2): ['bispo', 'preto', 'por mover'], (1, 3): ['cavalo', 'preto', 'por mover'], (1, 4): ['rainha', 'preto', 'por mover'], (1, 5): ['rei', 'preto', 'por mover'], (1, 6): ['cavalo', 'preto', 'por mover'], (1, 7): ['bispo', 'preto', 'por mover'], (1, 8): ['torre', 'preto', 'por mover'], (2, 1): ['peao', 'preto', 'por mover'], (2, 2): ['peao', 'preto', 'por mover'], (2, 3): ['peao', 'preto', 'por mover'], (2, 4): ['peao', 'preto', 'por mover'], (2, 5): ['peao', 'preto', 'por mover'], (2, 6): ['peao', 'preto', 'por mover'], (2, 7): ['peao', 'preto', 'por mover'], (2, 8): ['peao', 'preto', 'por mover'], (3, 1): 'vazio', (3, 2): 'vazio', (3, 3): 'vazio', (3, 4): 'vazio', (3, 5): ['torre', 'preto', 'por mover'], (3, 6): 'vazio', (3, 7): 'vazio', (3, 8): 'vazio', (4, 1): 'vazio', (4, 2): 'vazio', (4, 3): 'vazio', (4, 4): 'vazio', (4, 5): 'vazio', (4, 6): 'vazio', (4, 7): 'vazio', (4, 8): 'vazio', (5, 1): 'vazio', (5, 2): 'vazio', (5, 3): 'vazio', (5, 4): 'vazio', (5, 5): 'vazio', (5, 6): 'vazio', (5, 7): 'vazio', (5, 8): 'vazio', (6, 1): 'vazio', (6, 2): 'vazio', (6, 3): 'vazio', (6, 4): 'vazio', (6, 5): 'vazio', (6, 6): 'vazio', (6, 7): 'vazio', (6, 8): 'vazio', (7, 1): ['peao', 'branco', 'por mover'], (7, 2): ['peao', 'branco', 'por mover'], (7, 3): ['peao', 'branco', 'por mover'], (7, 4): ['peao', 'branco', 'por mover'], (7, 5): 'vazio', (7, 6): ['peao', 'branco', 'por mover'], (7, 7): ['peao', 'branco', 'por mover'], (7, 8): ['peao', 'branco', 'por mover'], (8, 1): ['torre', 'branco', 'por mover'], (8, 2): ['bispo', 'branco', 'por mover'], (8, 3): ['cavalo', 'branco', 'por mover'], (8, 4): ['rainha', 'branco', 'por mover'], (8, 5): ['rei', 'branco', 'por mover'], (8, 6): ['cavalo', 'branco', 'por mover'], (8, 7): ['bispo', 'branco', 'por mover'], (8, 8): ['torre', 'branco', 'por mover']}))
