@@ -1255,7 +1255,7 @@ def posicoes_check(Cor: str, Tab: dict) -> list:
     return Lista_final
 
 
-def verif_king_rook_esq(Lin, Col, Tab): # adicionar verificação de check
+def verif_king_rook_esq(Lin, Col, Tab): 
     List_aux = []
     Cor = obtem_cor(Lin, Col, Tab)
     List_posi_check = posicoes_check(Cor, Tab)
@@ -1277,7 +1277,7 @@ def verif_king_rook_esq(Lin, Col, Tab): # adicionar verificação de check
     return List_aux
     
     
-def verif_king_rook_dir(Lin, Col, Tab): # adicionar verificação de check
+def verif_king_rook_dir(Lin, Col, Tab): 
     List_aux = []    
     Cor = obtem_cor(Lin, Col, Tab)
     List_posi_check = posicoes_check(Cor, Tab)
@@ -1318,3 +1318,32 @@ def coord_rei_possiv_com_check(Lin, Col, Tab):
                     List_aux += [coord]
 
     return  List_aux
+
+
+def verifica_check(Cor: str, Tab: dict) -> bool:
+    coord_rei = 0
+    posi_check = posicoes_check(Cor, Tab)
+
+    for lin in range(1,9):
+        for col in range(1,9):
+            if verifica_rei(obtem_peca(lin, col, Tab)) and obtem_cor(lin, col, Tab) == Cor:
+                coord_rei = (lin, col)
+    
+    if coord_rei in posi_check:
+        return True
+    else:
+        return False
+
+
+def mexe_peca(lin_antes: int, col_antes: int, lin_depois: int, col_depois: int, Tab: dict, cond_en_passant: bool) -> dict:
+    atributos = obtem_atributos(lin_antes, col_antes, Tab)
+    if cond_en_passant:
+        Tab[lin_antes, col_antes] = vazio()
+        Tab[lin_depois, col_depois] = atributos[:2] + [movido_uma_vez()]
+    else:
+        Tab[lin_antes, col_antes] = vazio()
+        Tab[lin_depois, col_depois] = atributos[:2] + [movido()]
+    
+    return Tab
+
+
