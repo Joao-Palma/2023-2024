@@ -1,5 +1,6 @@
 from math import sqrt
 from random import choice
+from os import system
 
 # minesweeper
 
@@ -280,8 +281,11 @@ def str_para_coord(Str):
         return (int(Str[:-1]), int(ord(Str[-1])-96))
     else:
         return (int(Str[:-1]), int(ord(Str[-1])-64))
+    
 
-
+def clear():
+    system("cls")
+    
 
 def comeca_jogo():
     print("\t      ___     _____     _____-----------_____     _____     ___\
@@ -317,6 +321,7 @@ def comeca_jogo():
         print("dificuldade não definida")
         comeca_jogo()
     
+    clear()
     jogo(Tab)
 
 
@@ -344,11 +349,13 @@ def jogo(Tab):
                     Coord = str_para_coord(Coord_str[1:])
                 except ValueError:
                     print("coordenada não valida")
+                    clear()
                     jogo(Tab)
 
                 if verifica_bandeira(obtem_estado(Coord[0], Coord[1], Tab)):
                     Atributos = obtem_atributos(Coord[0], Coord[1], Tab)
                     Tab[(Coord[0], Coord[1])] = [Atributos[0]] + [por_ver()] + [Atributos[2]]
+                    clear()
                     jogo(Tab)
                 else:
                     if verifica_por_ver(obtem_estado(Coord[0], Coord[1], Tab)):
@@ -357,6 +364,7 @@ def jogo(Tab):
                         jogo(Tab)
                     else:
                         print("coordenada não valida")
+                        clear()
                         jogo(Tab)
 
 
@@ -364,20 +372,24 @@ def jogo(Tab):
                 try:
                     Coord = str_para_coord(Coord_str)
                 except ValueError:
+                    clear()
                     print("coordenada não valida")
                     jogo(Tab)
 
                 if not(verif_coord(Tam, Coord[0], Coord[1])):
+                    clear()
                     print("coordenada não valida")
                     jogo(Tab)
 
                 elif verifica_bandeira(obtem_estado(Coord[0], Coord[1], Tab)):
+                    clear()
                     print("coordenada não valida")
                     jogo(Tab)
 
                 elif verifica_mina(obtem_conteudo(Coord[0], Coord[1], Tab)):
                     Atributos = obtem_atributos(Coord[0], Coord[1], Tab)
                     Tab[(Coord[0], Coord[1])] = [Atributos[0]] + [visto()] + [Atributos[2]]
+                    clear()
                     print(tab_para_str(Tab) + "\n")
                     print("\t\t\t.____________________________.\
                           \n\t\t\t |  _  _  _  _  _  _ ___  _ |\
@@ -388,13 +400,14 @@ def jogo(Tab):
                     Condi = False
 
                 elif verifica_visto(obtem_estado(Coord[0], Coord[1], Tab)):
+                    clear()
                     print("coordenada não valida")
                     jogo(Tab)
 
                 else:
                     Tab1 = jogada(Coord[0], Coord[1], Tab)
+                    clear()
                     jogo(Tab1)
                 
-
 
 comeca_jogo()
