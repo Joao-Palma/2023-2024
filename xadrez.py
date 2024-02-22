@@ -801,7 +801,7 @@ def coord_bispo_possiv(Lin: int, Col:int, Tab: dict) -> list:
                             ):
                             Cond = False
                         else:
-                            Col_aux -= 1
+                            Col_aux += 1
                             Lin_aux += 1 
                             List_aux += [(Lin_aux, Col_aux)]
                 for coord_aux in List_aux:
@@ -816,7 +816,7 @@ def coord_bispo_possiv(Lin: int, Col:int, Tab: dict) -> list:
                             ):
                             Cond = False
                         else:
-                            Col_aux -= 1
+                            Col_aux += 1
                             Lin_aux += 1 
                             List_aux += [(Lin_aux, Col_aux)]
                 for coord_aux in List_aux:
@@ -835,7 +835,7 @@ def coord_bispo_possiv(Lin: int, Col:int, Tab: dict) -> list:
                             Cond = False
                         else:
                             Col_aux -= 1
-                            Lin_aux += 1 
+                            Lin_aux -= 1 
                             List_aux += [(Lin_aux, Col_aux)]
                 for coord_aux in List_aux:
                     if coord_aux in sup_esq:
@@ -850,7 +850,7 @@ def coord_bispo_possiv(Lin: int, Col:int, Tab: dict) -> list:
                             Cond = False
                         else:
                             Col_aux -= 1
-                            Lin_aux += 1 
+                            Lin_aux -= 1 
                             List_aux += [(Lin_aux, Col_aux)]
                 for coord_aux in List_aux:
                     if coord_aux in sup_esq: 
@@ -867,8 +867,8 @@ def coord_bispo_possiv(Lin: int, Col:int, Tab: dict) -> list:
                             ):
                             Cond = False
                         else:
-                            Col_aux -= 1
-                            Lin_aux += 1 
+                            Col_aux += 1
+                            Lin_aux -= 1 
                             List_aux += [(Lin_aux, Col_aux)]
                 for coord_aux in List_aux:
                     if coord_aux in sup_dir:
@@ -882,8 +882,8 @@ def coord_bispo_possiv(Lin: int, Col:int, Tab: dict) -> list:
                             ):
                             Cond = False
                         else:
-                            Col_aux -= 1
-                            Lin_aux += 1 
+                            Col_aux += 1
+                            Lin_aux -= 1 
                             List_aux += [(Lin_aux, Col_aux)]
                 for coord_aux in List_aux:
                     if coord_aux in sup_dir:
@@ -1231,6 +1231,9 @@ def coord_torre_possiv_para_check(Lin: int, Col:int, Tab: dict) -> list:
 
 
 def coord_rainha_possiv_para_check(Lin, Col, Tab):
+    """
+    Aux
+    """
     return coord_bispo_possiv_para_check(Lin, Col, Tab) + coord_torre_possiv_para_check(Lin, Col, Tab)
 
 #----------------------------------------------------------------------------------
@@ -1458,9 +1461,16 @@ def str_para_coord(Str):
        ord(Str[-1]) >= 97 
        and ord(Str[-1]) <= 122
        ):
-        return (int(Str[:-1]), int(ord(Str[-1])-96))
+        return (abs(int(Str[:-1]) - 9), int(ord(Str[-1])-96))
     else:
-        return (int(Str[:-1]), int(ord(Str[-1])-64))
+        return (abs(int(Str[:-1]) - 9), int(ord(Str[-1])-64))
+    
+
+def verifica_coord(Lin, Col):
+    return (Lin > 0
+            and Lin < 9
+            and Col > 0
+            and Col < 9)
 
 
 def jogada_legal(lin_antes: int, col_antes: int, lin_depois: int, col_depois: int, Tab: dict, Cor: str) -> bool:
@@ -1506,12 +1516,14 @@ def jogo(Tab, Num_jogada):
     else:
         Cor = preto()
 
+    print("jogada dos " + Cor)
+
     if verifica_empate(Cor, Tab):
-        return "empate"
+        return print("empate por afogamento")
 
     if verifica_check(Cor, Tab):
         if verifica_checkmate(Cor, Tab):
-            return "Checkmate" 
+            return print("Checkmate para" + Cor) 
 
     Condi_para_mover = True 
     while Condi_para_mover:
@@ -1521,7 +1533,10 @@ def jogo(Tab, Num_jogada):
             answer = str(input("que peça mover?\n             ->"))
             try: 
                 coord_da_peca = str_para_coord(answer)
-                if not(verifica_vazio(obtem_atributos(coord_da_peca[0], coord_da_peca[1], Tab))) and obtem_cor(coord_da_peca[0], coord_da_peca[1], Tab) == Cor:
+                if(verifica_coord(coord_da_peca[0], coord_da_peca[1]) 
+                   and not(verifica_vazio(obtem_atributos(coord_da_peca[0], coord_da_peca[1], Tab))) 
+                   and obtem_cor(coord_da_peca[0], coord_da_peca[1], Tab) == Cor
+                   ):
                     Condi_escolha_peca = False
             except ValueError:
                 print("coordenada invalida")
@@ -1530,6 +1545,7 @@ def jogo(Tab, Num_jogada):
             coord_en_passant = []
             coord_rook_dir = []
             coord_rook_esq = []
+            coord_prim_peao = []
 
             if verifica_bispo(obtem_peca(coord_da_peca[0], coord_da_peca[1], Tab)):
                 coord_possiv += coord_bispo_possiv(coord_da_peca[0], coord_da_peca[1], Tab)
@@ -1540,6 +1556,7 @@ def jogo(Tab, Num_jogada):
             elif verifica_peao(obtem_peca(coord_da_peca[0], coord_da_peca[1], Tab)):
                 coord_possiv += coord_peao_possiv(coord_da_peca[0], coord_da_peca[1], Tab)
                 coord_en_passant += coord_En_passant_possi(coord_da_peca[0], coord_da_peca[1], Tab) 
+                coord_prim_peao += coord_prim_peao_possi(coord_da_peca[0], coord_da_peca[1], Tab)
             elif verifica_rei(obtem_peca(coord_da_peca[0], coord_da_peca[1], Tab)):
                 coord_possiv += coord_rei_possiv_com_check(coord_da_peca[0], coord_da_peca[1], Tab)
                 coord_rook_dir += verif_king_rook_dir(coord_da_peca[0], coord_da_peca[1], Tab)
@@ -1551,10 +1568,13 @@ def jogo(Tab, Num_jogada):
                 answer = str(input("para onde?\n             ->"))
                 try: 
                     coord_para_mover = str_para_coord(answer)
-                    if ((coord_para_mover in coord_possiv 
-                            or coord_para_mover in coord_en_passant 
-                            or coord_para_mover in coord_rook_esq 
-                            or coord_para_mover in coord_rook_dir)
+                    if (verif_coord(coord_para_mover[0], coord_para_mover[1])
+                        and (coord_para_mover in coord_possiv 
+                             or coord_para_mover in coord_en_passant 
+                             or coord_para_mover in coord_rook_esq 
+                             or coord_para_mover in coord_rook_dir
+                             or coord_para_mover in coord_prim_peao
+                             )
                         and jogada_legal(coord_da_peca[0], coord_da_peca[1], coord_para_mover[0], coord_para_mover[1], Tab, Cor)
                         ):
                         Condi_escolha_movi = False
@@ -1565,6 +1585,12 @@ def jogo(Tab, Num_jogada):
 
     if len(coord_en_passant) != 0:
         Tab_com_movi = mexe_peca(coord_da_peca[0], coord_da_peca[1], coord_para_mover[0], coord_para_mover[1], Tab, True)
+        return jogo(Tab_com_movi, Num_jogada + 1)
+    
+    elif len(coord_prim_peao) != 0:
+        Tab_com_movi = mexe_peca(coord_da_peca[0], coord_da_peca[1], coord_para_mover[0], coord_para_mover[1], Tab, True)
+        Atributos = obtem_atributos(coord_para_mover[0], coord_para_mover[1], Tab_com_movi)
+        Tab_com_movi[coord_para_mover[0], coord_para_mover[1]] = Atributos[:2] + [movido_uma_vez()]
         return jogo(Tab_com_movi, Num_jogada + 1)
 
     elif len(coord_rook_dir) != 0:
@@ -1591,12 +1617,6 @@ def jogo(Tab, Num_jogada):
 
 
 
-
-
-
-
-
-    
 comeca_jogo()
 # Tab = {(1, 1): 'vazio', (1, 2): 'vazio', (1, 3): 'vazio', (1, 4): 'vazio', (1, 5): 'vazio', (1, 6): 'vazio', (1, 7): 'vazio', (1, 8): 'vazio', (2, 1): 'vazio', (2, 2): 'vazio', (2, 3): 'vazio', (2, 4): 'vazio', (2, 5): 'vazio', (2, 6): [peao(),preto(),movido()], (2, 7): 'vazio', (2, 8): [bispo(),preto(),movido()], (3, 1): 'vazio', (3, 2): 'vazio', (3, 3): 'vazio', (3, 4): 'vazio', (3, 5): 'vazio', (3, 6): [peao(),branco(),movido()], (3, 7): 'vazio', (3, 8): 'vazio', (4, 1): 'vazio', (4, 2): 'vazio', (4, 3): 'vazio', (4, 4): 'vazio', (4, 5): 'vazio', (4, 6): 'vazio', (4, 7): 'vazio', (4, 8): 'vazio', (5, 1): 'vazio', (5, 2): 'vazio', (5, 3): 'vazio', (5, 4): 'vazio', (5, 5): 'vazio', (5, 6): 'vazio', (5, 7): 'vazio', (5, 8): 'vazio', (6, 1): 'vazio', (6, 2): 'vazio', (6, 3): 'vazio', (6, 4): 'vazio', (6, 5): 'vazio', (6, 6): 'vazio', (6, 7): 'vazio', (6, 8): 'vazio', (7, 1): [torre(),preto(),movido()], (7, 2): 'vazio', (7, 3): 'vazio', (7, 4): 'vazio', (7, 5): 'vazio', (7, 6): 'vazio', (7, 7): 'vazio', (7, 8): [torre(),preto(),movido()], (8, 1): [rei(),branco(),movido()], (8, 2): 'vazio', (8, 3): 'vazio', (8, 4): 'vazio', (8, 5): 'vazio', (8, 6): 'vazio', (8, 7): 'vazio', (8, 8): 'vazio'}
 # print(Tab_para_str(Tab))
