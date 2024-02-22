@@ -1368,9 +1368,7 @@ def verifica_checkmate(Cor: str, Tab: dict) -> bool:
                             for coord in coord_possiv:
                                 if coord not in coord_experimentadas:
                                     coord_experimentadas += [coord]
-                                    tab_copia = Tab.copy()
-                                    tab_com_movi = mexe_peca(lin, col, coord[0], coord[1], tab_copia, False)
-                                    if not(verifica_check(Cor, tab_com_movi)):
+                                    if jogada_legal(lin, col, coord[0], coord[1], Tab, False, Cor):
                                         condi *= 0
 
                         elif verifica_torre(obtem_peca(lin, col, Tab)):
@@ -1378,9 +1376,7 @@ def verifica_checkmate(Cor: str, Tab: dict) -> bool:
                             for coord in coord_possiv:
                                 if coord not in coord_experimentadas:
                                     coord_experimentadas += [coord]
-                                    tab_copia = Tab.copy()
-                                    tab_com_movi = mexe_peca(lin, col, coord[0], coord[1], tab_copia, False)
-                                    if not(verifica_check(Cor, tab_com_movi)):
+                                    if jogada_legal(lin, col, coord[0], coord[1], Tab, False, Cor):
                                         condi *= 0
 
                         elif verifica_cavalo(obtem_peca(lin, col, Tab)):
@@ -1388,9 +1384,7 @@ def verifica_checkmate(Cor: str, Tab: dict) -> bool:
                             for coord in coord_possiv:
                                 if coord not in coord_experimentadas:
                                     coord_experimentadas += [coord]
-                                    tab_copia = Tab.copy()
-                                    tab_com_movi = mexe_peca(lin, col, coord[0], coord[1], tab_copia, False)
-                                    if not(verifica_check(Cor, tab_com_movi)):
+                                    if jogada_legal(lin, col, coord[0], coord[1], Tab, False, Cor):
                                         condi *= 0
 
                         elif verifica_bispo(obtem_peca(lin, col, Tab)):
@@ -1398,9 +1392,7 @@ def verifica_checkmate(Cor: str, Tab: dict) -> bool:
                             for coord in coord_possiv:
                                 if coord not in coord_experimentadas:
                                     coord_experimentadas += [coord]
-                                    tab_copia = Tab.copy()
-                                    tab_com_movi = mexe_peca(lin, col, coord[0], coord[1], tab_copia, False)
-                                    if not(verifica_check(Cor, tab_com_movi)):
+                                    if jogada_legal(lin, col, coord[0], coord[1], Tab, False, Cor):
                                         condi *= 0
 
                         else:
@@ -1408,9 +1400,7 @@ def verifica_checkmate(Cor: str, Tab: dict) -> bool:
                             for coord in coord_possiv:
                                 if coord not in coord_experimentadas:
                                     coord_experimentadas += [coord]
-                                    tab_copia = Tab.copy()
-                                    tab_com_movi = mexe_peca(lin, col, coord[0], coord[1], tab_copia, False)
-                                    if not(verifica_check(Cor, tab_com_movi)):
+                                    if jogada_legal(lin, col, coord[0], coord[1], Tab, False, Cor):
                                         condi *= 0
 
         if not(condi):
@@ -1462,6 +1452,7 @@ def mexe_peca(lin_antes: int, col_antes: int, lin_depois: int, col_depois: int, 
     
     return Tab
 
+
 def str_para_coord(Str):
     if(
        ord(Str[-1]) >= 97 
@@ -1470,6 +1461,15 @@ def str_para_coord(Str):
         return (int(Str[:-1]), int(ord(Str[-1])-96))
     else:
         return (int(Str[:-1]), int(ord(Str[-1])-64))
+
+
+def jogada_legal(lin_antes: int, col_antes: int, lin_depois: int, col_depois: int, Tab: dict, Cor: str) -> bool:
+    tab_copia = Tab.copy()
+    tab_com_movi = mexe_peca(lin_antes, col_antes, lin_depois, col_depois, tab_copia, False)
+    if not(verifica_check(Cor, tab_com_movi)):
+        return True 
+    else:
+        return False     
 
 
 def comeca_jogo():
@@ -1507,34 +1507,79 @@ def jogo(Tab, Num_jogada):
         Cor = preto()
 
     if verifica_empate(Cor, Tab):
-        pass
+        return "empate"
 
     if verifica_check(Cor, Tab):
-        pass
+        if verifica_checkmate(Cor, Tab):
+            return "Checkmate" 
 
-    Condi = True 
-    while Condi:
-        answer = str(input("que peça mover?\n             ->"))
-        try: 
-            coord_da_peca = str_para_coord(answer)
-            if not(verifica_vazio(obtem_atributos(coord_da_peca[0], coord_da_peca[1], Tab))) and obtem_cor(coord_da_peca[0], coord_da_peca[1], Tab) == Cor:
-                Condi = False
-        except ValueError:
-            print("coordenada invalida")
+    Condi_para_mover = True 
+    while Condi_para_mover:
+        Condi_escolha_peca = True
+        Condi_escolha_movi = True 
+        while Condi_escolha_peca:
+            answer = str(input("que peça mover?\n             ->"))
+            try: 
+                coord_da_peca = str_para_coord(answer)
+                if not(verifica_vazio(obtem_atributos(coord_da_peca[0], coord_da_peca[1], Tab))) and obtem_cor(coord_da_peca[0], coord_da_peca[1], Tab) == Cor:
+                    Condi_escolha_peca = False
+            except ValueError:
+                print("coordenada invalida")
 
+            coord_possiv = []
+            coord_en_passant = []
+            coord_rook_dir = []
+            coord_rook_esq = []
 
-    Condi = True 
-    while Condi:
-        answer = str(input("para onde?\n             ->"))
-        try: 
-            coord_para_mover = str_para_coord(answer)
-            if not(verifica_vazio(obtem_atributos(coord_para_mover[0], coord_para_mover[1], Tab))) and obtem_cor(coord_para_mover[0], coord_para_mover[1], Tab) == Cor:
-                Condi = False
-        except ValueError:
-            print("coordenada invalida")
+            if verifica_bispo(obtem_peca(coord_da_peca[0], coord_da_peca[1], Tab)):
+                coord_possiv += coord_bispo_possiv(coord_da_peca[0], coord_da_peca[1], Tab)
+            elif verifica_torre(obtem_peca(coord_da_peca[0], coord_da_peca[1], Tab)):
+                coord_possiv += coord_torre_possiv(coord_da_peca[0], coord_da_peca[1], Tab)
+            elif verifica_cavalo(obtem_peca(coord_da_peca[0], coord_da_peca[1], Tab)):
+                coord_possiv += coord_cavalo_possiv(coord_da_peca[0], coord_da_peca[1], Tab)
+            elif verifica_peao(obtem_peca(coord_da_peca[0], coord_da_peca[1], Tab)):
+                coord_possiv += coord_peao_possiv(coord_da_peca[0], coord_da_peca[1], Tab)
+                coord_en_passant += coord_En_passant_possi(coord_da_peca[0], coord_da_peca[1], Tab) 
+            elif verifica_rei(obtem_peca(coord_da_peca[0], coord_da_peca[1], Tab)):
+                coord_possiv += coord_rei_possiv_com_check(coord_da_peca[0], coord_da_peca[1], Tab)
+                coord_rook_dir += verif_king_rook_dir(coord_da_peca[0], coord_da_peca[1], Tab)
+                coord_rook_esq += verif_king_rook_esq(coord_da_peca[0], coord_da_peca[1], Tab)
+            else:
+                coord_possiv += coord_rainha_possiv(coord_da_peca[0], coord_da_peca[1], Tab)
+        
+            while Condi_escolha_movi: 
+                answer = str(input("para onde?\n             ->"))
+                try: 
+                    coord_para_mover = str_para_coord(answer)
+                    if ((coord_para_mover in coord_possiv 
+                            or coord_para_mover in coord_en_passant 
+                            or coord_para_mover in coord_rook_esq 
+                            or coord_para_mover in coord_rook_dir)
+                        and jogada_legal(coord_da_peca[0], coord_da_peca[1], coord_para_mover[0], coord_para_mover[1], Tab, Cor)
+                        ):
+                        Condi_escolha_movi = False
+                        Condi_para_mover = False
+                except ValueError:
+                    print("coordenada invalida")
+                    Condi_escolha_movi = False
 
+    if len(coord_en_passant) != 0:
+        Tab_com_movi = mexe_peca(coord_da_peca[0], coord_da_peca[1], coord_para_mover[0], coord_para_mover[1], Tab, True)
+        return jogo(Tab_com_movi, Num_jogada + 1)
 
+    elif len(coord_rook_dir) != 0:
+        Tab_com_movi_rei = mexe_peca(coord_da_peca[0], coord_da_peca[1], coord_para_mover[0], coord_para_mover[1], Tab, False)
+        Tab_com_movi = mexe_peca(coord_da_peca[0], 8, coord_para_mover[0], (coord_para_mover[1] - 1), Tab_com_movi_rei, False)
+        return jogo(Tab_com_movi, Num_jogada + 1)
 
+    elif len(coord_rook_esq) != 0:
+        Tab_com_movi_rei = mexe_peca(coord_da_peca[0], coord_da_peca[1], coord_para_mover[0], coord_para_mover[1], Tab, False)
+        Tab_com_movi = mexe_peca(coord_da_peca[0], 1, coord_para_mover[0], coord_para_mover[1] + 1, Tab_com_movi_rei, False)
+        return jogo(Tab_com_movi, Num_jogada + 1)
+
+    else:
+        Tab_com_movi = mexe_peca(coord_da_peca[0], coord_da_peca[1], coord_para_mover[0], coord_para_mover[1], Tab, False)
+        return jogo(Tab_com_movi, Num_jogada + 1)
 
 
 
@@ -1552,8 +1597,8 @@ def jogo(Tab, Num_jogada):
 
 
     
-# comeca_jogo()
-# Tab = {(1, 1): 'vazio', (1, 2): 'vazio', (1, 3): 'vazio', (1, 4): 'vazio', (1, 5): 'vazio', (1, 6): 'vazio', (1, 7): 'vazio', (1, 8): 'vazio', (2, 1): 'vazio', (2, 2): 'vazio', (2, 3): 'vazio', (2, 4): 'vazio', (2, 5): 'vazio', (2, 6): [peao(),preto(),movido()], (2, 7): 'vazio', (2, 8): [bispo(),preto(),movido()], (3, 1): 'vazio', (3, 2): 'vazio', (3, 3): 'vazio', (3, 4): 'vazio', (3, 5): 'vazio', (3, 6): [peao(),branco(),movido()], (3, 7): 'vazio', (3, 8): 'vazio', (4, 1): 'vazio', (4, 2): 'vazio', (4, 3): 'vazio', (4, 4): 'vazio', (4, 5): 'vazio', (4, 6): 'vazio', (4, 7): 'vazio', (4, 8): 'vazio', (5, 1): 'vazio', (5, 2): 'vazio', (5, 3): 'vazio', (5, 4): 'vazio', (5, 5): 'vazio', (5, 6): 'vazio', (5, 7): 'vazio', (5, 8): 'vazio', (6, 1): 'vazio', (6, 2): 'vazio', (6, 3): 'vazio', (6, 4): 'vazio', (6, 5): 'vazio', (6, 6): 'vazio', (6, 7): 'vazio', (6, 8): 'vazio', (7, 1): 'vazio', (7, 2): 'vazio', (7, 3): 'vazio', (7, 4): 'vazio', (7, 5): 'vazio', (7, 6): 'vazio', (7, 7): 'vazio', (7, 8): [torre(),preto(),movido()], (8, 1): [rei(),branco(),movido()], (8, 2): 'vazio', (8, 3): 'vazio', (8, 4): 'vazio', (8, 5): 'vazio', (8, 6): 'vazio', (8, 7): 'vazio', (8, 8): 'vazio'}
+comeca_jogo()
+# Tab = {(1, 1): 'vazio', (1, 2): 'vazio', (1, 3): 'vazio', (1, 4): 'vazio', (1, 5): 'vazio', (1, 6): 'vazio', (1, 7): 'vazio', (1, 8): 'vazio', (2, 1): 'vazio', (2, 2): 'vazio', (2, 3): 'vazio', (2, 4): 'vazio', (2, 5): 'vazio', (2, 6): [peao(),preto(),movido()], (2, 7): 'vazio', (2, 8): [bispo(),preto(),movido()], (3, 1): 'vazio', (3, 2): 'vazio', (3, 3): 'vazio', (3, 4): 'vazio', (3, 5): 'vazio', (3, 6): [peao(),branco(),movido()], (3, 7): 'vazio', (3, 8): 'vazio', (4, 1): 'vazio', (4, 2): 'vazio', (4, 3): 'vazio', (4, 4): 'vazio', (4, 5): 'vazio', (4, 6): 'vazio', (4, 7): 'vazio', (4, 8): 'vazio', (5, 1): 'vazio', (5, 2): 'vazio', (5, 3): 'vazio', (5, 4): 'vazio', (5, 5): 'vazio', (5, 6): 'vazio', (5, 7): 'vazio', (5, 8): 'vazio', (6, 1): 'vazio', (6, 2): 'vazio', (6, 3): 'vazio', (6, 4): 'vazio', (6, 5): 'vazio', (6, 6): 'vazio', (6, 7): 'vazio', (6, 8): 'vazio', (7, 1): [torre(),preto(),movido()], (7, 2): 'vazio', (7, 3): 'vazio', (7, 4): 'vazio', (7, 5): 'vazio', (7, 6): 'vazio', (7, 7): 'vazio', (7, 8): [torre(),preto(),movido()], (8, 1): [rei(),branco(),movido()], (8, 2): 'vazio', (8, 3): 'vazio', (8, 4): 'vazio', (8, 5): 'vazio', (8, 6): 'vazio', (8, 7): 'vazio', (8, 8): 'vazio'}
 # print(Tab_para_str(Tab))
 # print(verifica_check(branco(), Tab))
 # print(verifica_checkmate(branco(), Tab))
