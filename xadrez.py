@@ -1,3 +1,4 @@
+from os import system
 
 #------------------------------
 
@@ -1473,6 +1474,10 @@ def verifica_coord(Lin, Col):
             and Col < 9)
 
 
+def clear():
+    system("cls")
+
+
 def jogada_legal(lin_antes: int, col_antes: int, lin_depois: int, col_depois: int, Tab: dict, Cor: str) -> bool:
     tab_copia = Tab.copy()
     tab_com_movi = mexe_peca(lin_antes, col_antes, lin_depois, col_depois, tab_copia, False)
@@ -1509,14 +1514,10 @@ def comeca_jogo():
 
 def jogo(Tab, Num_jogada):
 
-    print(Tab_para_str(Tab))
-
     if Num_jogada % 2 == 0:
         Cor = branco()
     else:
         Cor = preto()
-
-    print("jogada dos " + Cor)
 
     if verifica_empate(Cor, Tab):
         return print("empate por afogamento")
@@ -1524,14 +1525,19 @@ def jogo(Tab, Num_jogada):
     if verifica_check(Cor, Tab):
         if verifica_checkmate(Cor, Tab):
             return print("Checkmate para" + Cor) 
+        
+    condi_para_movi = True
 
-    Condi_para_mover = True 
-    while Condi_para_mover:
+    while condi_para_movi:
+        clear()
+        print(Tab_para_str(Tab))
+        print("jogada dos " + Cor)
         Condi_escolha_peca = True
         Condi_escolha_movi = True 
+        
         while Condi_escolha_peca:
             answer = str(input("que peça mover?\n             ->"))
-            try: 
+            try:
                 coord_da_peca = str_para_coord(answer)
                 if(verifica_coord(coord_da_peca[0], coord_da_peca[1]) 
                    and not(verifica_vazio(obtem_atributos(coord_da_peca[0], coord_da_peca[1], Tab))) 
@@ -1578,7 +1584,9 @@ def jogo(Tab, Num_jogada):
                         and jogada_legal(coord_da_peca[0], coord_da_peca[1], coord_para_mover[0], coord_para_mover[1], Tab, Cor)
                         ):
                         Condi_escolha_movi = False
-                        Condi_para_mover = False
+                        condi_para_movi = False
+                    else:
+                        Condi_escolha_movi = False
                 except ValueError:
                     print("coordenada invalida")
                     Condi_escolha_movi = False
