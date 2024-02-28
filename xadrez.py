@@ -390,11 +390,11 @@ def adiciona_pecas_tab(Tab: dict) -> dict:
             Tab_copia[(1, col)] = [torre(), preto(), por_mover()]
             Tab_copia[(8, col)] = [torre(), branco(), por_mover()]
         elif col == 2 or col == 7:
-            Tab_copia[(1, col)] = [bispo(), preto(), por_mover()]
-            Tab_copia[(8, col)] = [bispo(), branco(), por_mover()]
-        elif col == 3 or col == 6:
             Tab_copia[(1, col)] = [cavalo(), preto(), por_mover()]
             Tab_copia[(8, col)] = [cavalo(), branco(), por_mover()]
+        elif col == 3 or col == 6:
+            Tab_copia[(1, col)] = [bispo(), preto(), por_mover()]
+            Tab_copia[(8, col)] = [bispo(), branco(), por_mover()]
         elif col == 4:
             Tab_copia[(1, col)] = [rainha(), preto(), por_mover()]
             Tab_copia[(8, col)] = [rainha(), branco(), por_mover()]
@@ -440,9 +440,9 @@ def Tab_para_str(Tab):
                     if lin_por_col == 6:   # cor das linhas de baixo
                         if linha == 8:
                             if verifica_branco(obtem_cor_quadrado(linha, coluna)):
-                                    Tab_str += "\u001b[48;5;254m" + "\u001b[38;5;52m" + "____________" + "\033[0m"
+                                    Tab_str += "\u001b[48;5;254m" + "\u001b[38;5;52m" + "_"+chr(64+coluna)+"__________" + "\033[0m"
                             else:
-                                    Tab_str += "\u001b[48;5;234m" + "\u001b[38;5;52m" + "____________" + "\033[0m"
+                                    Tab_str += "\u001b[48;5;234m" + "\u001b[38;5;52m" + "_"+chr(64+coluna)+"__________" + "\033[0m"
                         else:
                             if verifica_branco(obtem_cor_quadrado(linha, coluna)):
                                     Tab_str += "\u001b[48;5;254m" + "            " + "\033[0m"
@@ -451,10 +451,16 @@ def Tab_para_str(Tab):
 
                     else:
                         if verifica_vazio(obtem_atributos(linha, coluna, Tab)):
-                            if verifica_branco(obtem_cor_quadrado(linha, coluna)):
-                                Tab_str += "\u001b[48;5;254m" + "            " + "\033[0m"
+                            if coluna == 1 and lin_por_col == 5:
+                                if verifica_branco(obtem_cor_quadrado(linha, coluna)):
+                                    Tab_str += "\u001b[48;5;254m" + str(abs(linha - 9)) + "           " + "\033[0m"
+                                else:
+                                    Tab_str += "\u001b[48;5;234m" + str(abs(linha - 9)) + "           " + "\033[0m"
                             else:
-                                Tab_str += "\u001b[48;5;234m" + "            " + "\033[0m"
+                                if verifica_branco(obtem_cor_quadrado(linha, coluna)):
+                                    Tab_str += "\u001b[48;5;254m" + "            " + "\033[0m"
+                                else:
+                                    Tab_str += "\u001b[48;5;234m" + "            " + "\033[0m"
                         else:
                             if lin_por_col == 1:
                                 if (
@@ -663,46 +669,88 @@ def Tab_para_str(Tab):
                                             Tab_str += "\u001b[48;5;234m" + "\u001b[38;5;52m" + "    |P\     " + "\033[0m"
                             
                             else:
-                                if (
-                                    verifica_rainha(obtem_peca(linha, coluna, Tab))
-                                    or verifica_peao(obtem_peca(linha, coluna, Tab))
-                                    or verifica_bispo(obtem_peca(linha, coluna, Tab))
-                                    ):
-                                    if verifica_branco(obtem_cor_quadrado(linha, coluna)):
-                                        if verifica_branco(obtem_cor(linha, coluna, Tab)):
-                                            Tab_str += "\u001b[48;5;254m" + "\u001b[38;5;252m" + "   /___\    " + "\033[0m"
+                                if coluna == 1:
+                                    if (
+                                        verifica_rainha(obtem_peca(linha, coluna, Tab))
+                                        or verifica_peao(obtem_peca(linha, coluna, Tab))
+                                        or verifica_bispo(obtem_peca(linha, coluna, Tab))
+                                        ):
+                                        if verifica_branco(obtem_cor_quadrado(linha, coluna)):
+                                            if verifica_branco(obtem_cor(linha, coluna, Tab)):
+                                                Tab_str += "\u001b[48;5;254m" + str(abs(linha-9)) + "\u001b[38;5;252m" + "  /___\    " + "\033[0m"
+                                            else:
+                                                Tab_str += "\u001b[48;5;254m" + str(abs(linha-9)) + "\u001b[38;5;52m" + "  /___\    " + "\033[0m"
                                         else:
-                                            Tab_str += "\u001b[48;5;254m" + "\u001b[38;5;52m" + "   /___\    " + "\033[0m"
+                                            if verifica_branco(obtem_cor(linha, coluna, Tab)):
+                                                Tab_str += "\u001b[48;5;234m" + str(abs(linha-9)) + "\u001b[38;5;252m" + "  /___\    " + "\033[0m"
+                                            else:
+                                                Tab_str += "\u001b[48;5;234m" +str(abs(linha-9)) +  "\u001b[38;5;52m" + "  /___\    " + "\033[0m"
+                                    elif(
+                                        verifica_rei(obtem_peca(linha, coluna, Tab))
+                                        or verifica_torre(obtem_peca(linha, coluna, Tab))
+                                        ):
+                                        if verifica_branco(obtem_cor_quadrado(linha, coluna)):
+                                            if verifica_branco(obtem_cor(linha, coluna, Tab)):
+                                                Tab_str += "\u001b[48;5;254m" + str(abs(linha-9)) + "\u001b[38;5;252m" + "  |___|    " + "\033[0m"
+                                            else:
+                                                Tab_str += "\u001b[48;5;254m" + str(abs(linha-9)) + "\u001b[38;5;52m" + "  |___|    " + "\033[0m"
+                                        else:
+                                            if verifica_branco(obtem_cor(linha, coluna, Tab)):
+                                                Tab_str += "\u001b[48;5;234m" + str(abs(linha-9)) + "\u001b[38;5;252m" + "  |___|    " + "\033[0m"
+                                            else:
+                                                Tab_str += "\u001b[48;5;234m" + str(abs(linha-9)) + "\u001b[38;5;52m" + "  |___|    " + "\033[0m"
                                     else:
-                                        if verifica_branco(obtem_cor(linha, coluna, Tab)):
-                                            Tab_str += "\u001b[48;5;234m" + "\u001b[38;5;252m" + "   /___\    " + "\033[0m"
+                                        if verifica_branco(obtem_cor_quadrado(linha, coluna)):
+                                            if verifica_branco(obtem_cor(linha, coluna, Tab)):
+                                                Tab_str += "\u001b[48;5;254m" + str(abs(linha-9)) + "\u001b[38;5;252m" +  "  |___\    " + "\033[0m"
+                                            else:
+                                                Tab_str += "\u001b[48;5;254m" + str(abs(linha-9)) + "\u001b[38;5;52m" + "  |___\    " + "\033[0m"
                                         else:
-                                            Tab_str += "\u001b[48;5;234m" + "\u001b[38;5;52m" + "   /___\    " + "\033[0m"
-                                elif(
-                                    verifica_rei(obtem_peca(linha, coluna, Tab))
-                                    or verifica_torre(obtem_peca(linha, coluna, Tab))
-                                    ):
-                                    if verifica_branco(obtem_cor_quadrado(linha, coluna)):
-                                        if verifica_branco(obtem_cor(linha, coluna, Tab)):
-                                            Tab_str += "\u001b[48;5;254m" + "\u001b[38;5;252m" + "   |___|    " + "\033[0m"
-                                        else:
-                                            Tab_str += "\u001b[48;5;254m" + "\u001b[38;5;52m" + "   |___|    " + "\033[0m"
-                                    else:
-                                        if verifica_branco(obtem_cor(linha, coluna, Tab)):
-                                            Tab_str += "\u001b[48;5;234m" + "\u001b[38;5;252m" + "   |___|    " + "\033[0m"
-                                        else:
-                                            Tab_str += "\u001b[48;5;234m" + "\u001b[38;5;52m" + "   |___|    " + "\033[0m"
+                                            if verifica_branco(obtem_cor(linha, coluna, Tab)):
+                                                Tab_str += "\u001b[48;5;234m" + str(abs(linha-9)) + "\u001b[38;5;252m" +  "  |___\    " + "\033[0m"
+                                            else:
+                                                Tab_str += "\u001b[48;5;234m" + str(abs(linha-9)) + "\u001b[38;5;52m" + "  |___\    " + "\033[0m"
                                 else:
-                                    if verifica_branco(obtem_cor_quadrado(linha, coluna)):
-                                        if verifica_branco(obtem_cor(linha, coluna, Tab)):
-                                            Tab_str += "\u001b[48;5;254m" + "\u001b[38;5;252m" + "   |___\    " + "\033[0m"
+                                    if (
+                                        verifica_rainha(obtem_peca(linha, coluna, Tab))
+                                        or verifica_peao(obtem_peca(linha, coluna, Tab))
+                                        or verifica_bispo(obtem_peca(linha, coluna, Tab))
+                                        ):
+                                        if verifica_branco(obtem_cor_quadrado(linha, coluna)):
+                                            if verifica_branco(obtem_cor(linha, coluna, Tab)):
+                                                Tab_str += "\u001b[48;5;254m" + "\u001b[38;5;252m" + "   /___\    " + "\033[0m"
+                                            else:
+                                                Tab_str += "\u001b[48;5;254m" + "\u001b[38;5;52m" + "   /___\    " + "\033[0m"
                                         else:
-                                            Tab_str += "\u001b[48;5;254m" + "\u001b[38;5;52m" + "   |___\    " + "\033[0m"
+                                            if verifica_branco(obtem_cor(linha, coluna, Tab)):
+                                                Tab_str += "\u001b[48;5;234m" + "\u001b[38;5;252m" + "   /___\    " + "\033[0m"
+                                            else:
+                                                Tab_str += "\u001b[48;5;234m" + "\u001b[38;5;52m" + "   /___\    " + "\033[0m"
+                                    elif(
+                                        verifica_rei(obtem_peca(linha, coluna, Tab))
+                                        or verifica_torre(obtem_peca(linha, coluna, Tab))
+                                        ):
+                                        if verifica_branco(obtem_cor_quadrado(linha, coluna)):
+                                            if verifica_branco(obtem_cor(linha, coluna, Tab)):
+                                                Tab_str += "\u001b[48;5;254m" + "\u001b[38;5;252m" + "   |___|    " + "\033[0m"
+                                            else:
+                                                Tab_str += "\u001b[48;5;254m" + "\u001b[38;5;52m" + "   |___|    " + "\033[0m"
+                                        else:
+                                            if verifica_branco(obtem_cor(linha, coluna, Tab)):
+                                                Tab_str += "\u001b[48;5;234m" + "\u001b[38;5;252m" + "   |___|    " + "\033[0m"
+                                            else:
+                                                Tab_str += "\u001b[48;5;234m" + "\u001b[38;5;52m" + "   |___|    " + "\033[0m"
                                     else:
-                                        if verifica_branco(obtem_cor(linha, coluna, Tab)):
-                                            Tab_str += "\u001b[48;5;234m" + "\u001b[38;5;252m" + "   |___\    " + "\033[0m"
+                                        if verifica_branco(obtem_cor_quadrado(linha, coluna)):
+                                            if verifica_branco(obtem_cor(linha, coluna, Tab)):
+                                                Tab_str += "\u001b[48;5;254m" + "\u001b[38;5;252m" + "   |___\    " + "\033[0m"
+                                            else:
+                                                Tab_str += "\u001b[48;5;254m" + "\u001b[38;5;52m" + "   |___\    " + "\033[0m"
                                         else:
-                                            Tab_str += "\u001b[48;5;234m" + "\u001b[38;5;52m" + "   |___\    " + "\033[0m"
+                                            if verifica_branco(obtem_cor(linha, coluna, Tab)):
+                                                Tab_str += "\u001b[48;5;234m" + "\u001b[38;5;252m" + "   |___\    " + "\033[0m"
+                                            else:
+                                                Tab_str += "\u001b[48;5;234m" + "\u001b[38;5;52m" + "   |___\    " + "\033[0m"
                 Tab_str += "\u001b[38;5;52m| |\033[0m\n"
     Tab_str += "\u001b[38;5;52m|____________________________________________________________________________________________________|\033[0m"
     return Tab_str
@@ -1134,7 +1182,7 @@ def coord_bispo_possiv_para_check(Lin: int, Col:int, Tab: dict) -> list:
                         ):
                         Cond = False
                     else:
-                        Col_aux -= 1
+                        Col_aux += 1
                         Lin_aux += 1 
                         List_aux += [(Lin_aux, Col_aux)]
             for coord_aux in List_aux:
@@ -1151,7 +1199,7 @@ def coord_bispo_possiv_para_check(Lin: int, Col:int, Tab: dict) -> list:
                         Cond = False
                     else:
                         Col_aux -= 1
-                        Lin_aux += 1 
+                        Lin_aux -= 1 
                         List_aux += [(Lin_aux, Col_aux)]
             for coord_aux in List_aux:
                 if coord_aux in sup_esq: 
@@ -1166,8 +1214,8 @@ def coord_bispo_possiv_para_check(Lin: int, Col:int, Tab: dict) -> list:
                         ):
                         Cond = False
                     else:
-                        Col_aux -= 1
-                        Lin_aux += 1 
+                        Col_aux += 1
+                        Lin_aux -= 1 
                         List_aux += [(Lin_aux, Col_aux)]
             for coord_aux in List_aux:
                 if coord_aux in sup_dir:
@@ -1370,7 +1418,7 @@ def verifica_checkmate(Cor: str, Tab: dict) -> bool:
                             for coord in coord_possiv:
                                 if coord not in coord_experimentadas:
                                     coord_experimentadas += [coord]
-                                    if jogada_legal(lin, col, coord[0], coord[1], Tab, False, Cor):
+                                    if jogada_legal(lin, col, coord[0], coord[1], Tab, Cor):
                                         condi *= 0
 
                         elif verifica_torre(obtem_peca(lin, col, Tab)):
@@ -1378,7 +1426,7 @@ def verifica_checkmate(Cor: str, Tab: dict) -> bool:
                             for coord in coord_possiv:
                                 if coord not in coord_experimentadas:
                                     coord_experimentadas += [coord]
-                                    if jogada_legal(lin, col, coord[0], coord[1], Tab, False, Cor):
+                                    if jogada_legal(lin, col, coord[0], coord[1], Tab, Cor):
                                         condi *= 0
 
                         elif verifica_cavalo(obtem_peca(lin, col, Tab)):
@@ -1386,7 +1434,7 @@ def verifica_checkmate(Cor: str, Tab: dict) -> bool:
                             for coord in coord_possiv:
                                 if coord not in coord_experimentadas:
                                     coord_experimentadas += [coord]
-                                    if jogada_legal(lin, col, coord[0], coord[1], Tab, False, Cor):
+                                    if jogada_legal(lin, col, coord[0], coord[1], Tab, Cor):
                                         condi *= 0
 
                         elif verifica_bispo(obtem_peca(lin, col, Tab)):
@@ -1394,7 +1442,7 @@ def verifica_checkmate(Cor: str, Tab: dict) -> bool:
                             for coord in coord_possiv:
                                 if coord not in coord_experimentadas:
                                     coord_experimentadas += [coord]
-                                    if jogada_legal(lin, col, coord[0], coord[1], Tab, False, Cor):
+                                    if jogada_legal(lin, col, coord[0], coord[1], Tab, Cor):
                                         condi *= 0
 
                         else:
@@ -1402,7 +1450,7 @@ def verifica_checkmate(Cor: str, Tab: dict) -> bool:
                             for coord in coord_possiv:
                                 if coord not in coord_experimentadas:
                                     coord_experimentadas += [coord]
-                                    if jogada_legal(lin, col, coord[0], coord[1], Tab, False, Cor):
+                                    if jogada_legal(lin, col, coord[0], coord[1], Tab, Cor):
                                         condi *= 0
 
         if not(condi):
@@ -1519,11 +1567,18 @@ def jogo(Tab, Num_jogada):
         Cor = preto()
 
     if verifica_empate(Cor, Tab):
+        clear()
+        print(Tab_para_str(Tab))
         return print("empate por afogamento")
 
     if verifica_check(Cor, Tab):
         if verifica_checkmate(Cor, Tab):
-            return print("Checkmate para" + Cor) 
+            clear()
+            print(Tab_para_str(Tab))
+            if verifica_branco(Cor):
+                return print("Checkmate\nganhou " + preto()) 
+            else:
+                return print("Checkmate\nganhou " + branco())
         
     condi_para_movi = True
 
@@ -1624,10 +1679,9 @@ def jogo(Tab, Num_jogada):
 
 
 
-# comeca_jogo()
-Tab = {(1, 1): ['torre', 'preto', 'por mover'], (1, 2): ['bispo', 'preto', 'por mover'], (1, 3): ['cavalo', 'preto', 'por mover'], (1, 4): ['rainha', 'preto', 'por mover'], (1, 5): ['rei', 'preto', 'por mover'], (1, 6): ['cavalo', 'preto', 'por mover'], (1, 7): ['bispo', 'preto', 'por mover'], (1, 8): ['torre', 'preto', 'por mover'], (2, 1): ['peao', 'preto', 'por mover'], (2, 2): ['peao', 'preto', 'por mover'], (2, 3): ['peao', 'preto', 'por mover'], (2, 4): ['peao', 'preto', 'por mover'], (2, 5): ['peao', 'preto', 'por mover'], (2, 6): ['peao', 'preto', 'por mover'], (2, 7): ['peao', 'preto', 'por mover'], (2, 8): ['peao', 'preto', 'por mover'], (3, 1): 'vazio', (3, 2): 'vazio', (3, 3): 'vazio', (3, 4): 'vazio', (3, 5): 'vazio', (3, 6): 'vazio', (3, 7): 'vazio', (3, 8): 'vazio', (4, 1): 'vazio', (4, 2): 'vazio', (4, 3): 'vazio', (4, 4): 'vazio', (4, 5): 'vazio', (4, 6): 'vazio', (4, 7): 'vazio', (4, 8): 'vazio', (5, 1): 'vazio', (5, 2): ['peao', 'branco', 'por mover'], (5, 3): 'vazio', (5, 4): 'vazio', (5, 5): 'vazio', (5, 6): 'vazio', (5, 7): 'vazio', (5, 8): 'vazio', (6, 1): 'vazio', (6, 2): 'vazio', (6, 3): 'vazio', (6, 4): 'vazio', (6, 5): 'vazio', (6, 6): 'vazio', (6, 7): 'vazio', (6, 8): 'vazio', (7, 1): ['peao', 'branco', 'por mover'], (7, 2): 'vazio', (7, 3): ['peao', 'branco', 'por mover'], (7, 4): ['peao', 'branco', 'por mover'], (7, 5): ['peao', 'branco', 'por mover'], (7, 6): ['peao', 'branco', 'por mover'], (7, 7): ['peao', 'branco', 'por mover'], (7, 8): ['peao', 'branco', 'por mover'], (8, 1): ['torre', 'branco', 'por mover'], (8, 2): ['bispo', 'branco', 'por mover'], (8, 3): ['cavalo', 'branco', 'por mover'], (8, 4): ['rainha', 'branco', 'por mover'], (8, 5): ['rei', 'branco', 'por mover'], (8, 6): ['cavalo', 'branco', 'por mover'], (8, 7): ['bispo', 'branco', 'por mover'], (8, 8): ['torre', 'branco', 'por mover']}
-print(Tab)
-print(Tab_para_str(Tab))
-print(verifica_empate(preto(), Tab))
+comeca_jogo()
+# Tab = {(1, 1): ['torre', 'preto', 'por mover'], (1, 2): ['bispo', 'preto', 'por mover'], (1, 3): ['cavalo', 'preto', 'por mover'], (1, 4): ['rainha', 'preto', 'por mover'], (1, 5): ['rei', 'preto', 'por mover'], (1, 6): ['cavalo', 'preto', 'por mover'], (1, 7): ['bispo', 'preto', 'por mover'], (1, 8): ['torre', 'preto', 'por mover'], (2, 1): ['peao', 'preto', 'por mover'], (2, 2): ['peao', 'preto', 'por mover'], (2, 3): ['peao', 'preto', 'por mover'], (2, 4): ['peao', 'preto', 'por mover'], (2, 5): ['peao', 'preto', 'por mover'], (2, 6): ['peao', 'preto', 'por mover'], (2, 7): ['peao', 'preto', 'por mover'], (2, 8): ['peao', 'preto', 'por mover'], (3, 1): 'vazio', (3, 2): 'vazio', (3, 3): 'vazio', (3, 4): 'vazio', (3, 5): 'vazio', (3, 6): 'vazio', (3, 7): 'vazio', (3, 8): 'vazio', (4, 1): 'vazio', (4, 2): 'vazio', (4, 3): 'vazio', (4, 4): 'vazio', (4, 5): 'vazio', (4, 6): 'vazio', (4, 7): 'vazio', (4, 8): 'vazio', (5, 1): 'vazio', (5, 2): ['peao', 'branco', 'por mover'], (5, 3): 'vazio', (5, 4): 'vazio', (5, 5): 'vazio', (5, 6): 'vazio', (5, 7): 'vazio', (5, 8): 'vazio', (6, 1): 'vazio', (6, 2): 'vazio', (6, 3): 'vazio', (6, 4): 'vazio', (6, 5): 'vazio', (6, 6): 'vazio', (6, 7): 'vazio', (6, 8): 'vazio', (7, 1): ['peao', 'branco', 'por mover'], (7, 2): 'vazio', (7, 3): ['peao', 'branco', 'por mover'], (7, 4): ['peao', 'branco', 'por mover'], (7, 5): ['peao', 'branco', 'por mover'], (7, 6): ['peao', 'branco', 'por mover'], (7, 7): ['peao', 'branco', 'por mover'], (7, 8): ['peao', 'branco', 'por mover'], (8, 1): ['torre', 'branco', 'por mover'], (8, 2): ['bispo', 'branco', 'por mover'], (8, 3): ['cavalo', 'branco', 'por mover'], (8, 4): ['rainha', 'branco', 'por mover'], (8, 5): ['rei', 'branco', 'por mover'], (8, 6): ['cavalo', 'branco', 'por mover'], (8, 7): ['bispo', 'branco', 'por mover'], (8, 8): ['torre', 'branco', 'por mover']}
+# print(coord_bispo_possiv_para_check(8, 4, Tab))
+
 
 
