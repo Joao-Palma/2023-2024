@@ -1,1 +1,1 @@
-This repository is a combination of my universety projects and also some of my personal projects of 2023/2024
+This repository is a compilation of my university projects as well as some personal projects from the years 2023 and 2024.
