@@ -1,3 +1,5 @@
+# VERSION FOR LINUX
+
 from os import system
 
 #------------------------------
