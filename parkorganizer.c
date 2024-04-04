@@ -18,7 +18,6 @@
 
 #define MINYEAR 365*60*24
 
-
 /*
 ---------------program structures---------------
 */
@@ -57,7 +56,6 @@ typedef struct park{
     } Park;
 
 //--------------------AUXILIAR FUNCTIONS-------------------
-
 
 /// @brief verifies if two str are equal
 /// @param name1 
@@ -204,7 +202,7 @@ void freeall(Park* headpark) {
         }
     } 
 
-
+        
 /// @brief prints a Park name and free space
 /// @param park 
 void printparkfreespace(Park* park) {
@@ -1131,8 +1129,7 @@ int existCar(Park* headpark, char* license) {
     return 0;
     }
 
-
-
+        
 /// @brief removes a car from a specific park and 
 /// verifies if the input is correct
 /// @param headpark 
