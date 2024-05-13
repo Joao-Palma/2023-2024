@@ -6,11 +6,8 @@
 
 # Autores:
 # Ist1109242, João Palma
-# n_aluno, nome
-# n_aluno, nome
 
 # Tecnico/ULisboa
-
 
 # Variaveis em memoria
 .data
