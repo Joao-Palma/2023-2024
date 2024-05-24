@@ -6,15 +6,18 @@
 
 # Autores:
 # Ist1109242, João Palma
+# n_aluno, nome
+# n_aluno, nome
 
 # Tecnico/ULisboa
+
 
 # Variaveis em memoria
 .data
 
 #Input A - linha inclinada
-n_points:    .word 9
-points:      .word 0,0, 1,1, 2,2, 3,3, 4,4, 5,5, 6,6, 7,7 8,8
+#n_points:    .word 9
+#points:      .word 0,0, 1,1, 2,2, 3,3, 4,4, 5,5, 6,6, 7,7 8,8
 
 #Input B - Cruz
 #n_points:    .word 5
@@ -25,14 +28,14 @@ points:      .word 0,0, 1,1, 2,2, 3,3, 4,4, 5,5, 6,6, 7,7 8,8
 #points: .word 0,0, 0,1, 0,2, 1,0, 1,1, 1,2, 1,3, 2,0, 2,1, 5,3, 6,2, 6,3, 6,4, 7,2, 7,3, 6,8, 6,9, 7,8, 8,7, 8,8, 8,9, 9,7, 9,8
 
 #Input D
-#n_points:    .word 30
-#points:      .word 16, 1, 17, 2, 18, 6, 20, 3, 21, 1, 17, 4, 21, 7, 16, 4, 21, 6, 19, 6, 4, 24, 6, 24, 8, 23, 6, 26, 6, 26, 6, 23, 8, 25, 7, 26, 7, 20, 4, 21, 4, 10, 2, 10, 3, 11, 2, 12, 4, 13, 4, 9, 4, 9, 3, 8, 0, 10, 4, 10
+n_points:    .word 30
+points:      .word 16, 1, 17, 2, 18, 6, 20, 3, 21, 1, 17, 4, 21, 7, 16, 4, 21, 6, 19, 6, 4, 24, 6, 24, 8, 23, 6, 26, 6, 26, 6, 23, 8, 25, 7, 26, 7, 20, 4, 21, 4, 10, 2, 10, 3, 11, 2, 12, 4, 13, 4, 9, 4, 9, 3, 8, 0, 10, 4, 10
 
 
 
 # Valores de centroids e k a usar na 1a parte do projeto:
-centroids:   .word 0,0
-k:           .word 1
+centroids:   .word 0, 0, 4, 4, 3, 2
+k:           .word 3
 
 # Valores de centroids, k e L a usar na 2a parte do prejeto:
 #centroids:   .word 0,0, 10,0, 0,10
@@ -59,8 +62,17 @@ colors:      .word 0xff0000, 0x00ff00, 0x0000ff  # Cores dos pontos do cluster 0
  
 .text
     # Chama funcao principal da 1a parte do projeto  
+    
+    ### nearestCluster
+# Determina o centroide mais perto de um dado ponto (x,y).
+# Argumentos:
+# a0, a1: (x, y) point
+# Retorno:
+# a0: cluster index
 
-    jal mainSingleCluster
+    jal nearestCluster
+
+    #jal mainSingleCluster
 
     # Descomentar na 2a parte do projeto:
     #jal mainKMeans
@@ -80,6 +92,7 @@ colors:      .word 0xff0000, 0x00ff00, 0x0000ff  # Cores dos pontos do cluster 0
 # a2: cor
 
 printPoint:
+    
     li a3, LED_MATRIX_0_HEIGHT
     sub a1, a3, a1
     addi a1, a1, -1
@@ -102,7 +115,7 @@ cleanScreen:
     
     li t0, 0
     li t1, 0
-    li a2, black
+    li a2, white
     li t3, 32
     # save return adress to main function
     addi sp, sp, -4    
@@ -149,7 +162,8 @@ printClusters:
         add t3, t1, t3
         lw a0, 0(t3)
         lw a1, 4(t3)
-        li a2, white
+        la t4, colors
+        lw a2, 0(t4)
         jal printPoint
         addi t0, t0, 1
         blt t0, t2, ForprintClusters
@@ -179,10 +193,8 @@ printCentroids:
         add t3, t1, t3
         lw a0, 0(t3)
         lw a1, 4(t3)
-        la t1, colors
         slli t3, t0, 2
-        add t3, t1, t3
-        lw a2, 0(t3)
+        li a2, black
         jal printPoint
         addi t0, t0, 1
         blt t0, t2, ForprintCentroids
@@ -244,10 +256,10 @@ mainSingleCluster:
     jal ra, printClusters
 
     jal ra, calculateCentroids
-    # POR IMPLEMENTAR (1a parte)
+    # POR IMPLEMENTAR (2a parte)
 
     jal ra printCentroids
-    # POR IMPLEMENTAR (1a parte)
+    # POR IMPLEMENTAR (2a parte)
 
     lw ra, 0(sp)
     addi sp, sp, 4
@@ -264,7 +276,29 @@ mainSingleCluster:
 # a0: distance
 
 manhattanDistance:
-    # POR IMPLEMENTAR (2a parte)
+    
+    addi sp, sp, -12
+    sw t0, 0(sp)
+    sw t1, 4(sp)
+    sw t2, 8(sp)
+    
+    sub t0, a0, a2
+    bgez t0, pass1    # if the sub is positive
+    li, t2, -1
+    mul t0, t0, t2
+    pass1:
+    sub t1, a1, a3
+    bgez t1, pass2    # if the sub is positive
+    li, t2, -1
+    mul t1, t1, t2
+    pass2:
+    add a0, t0, t1
+    
+    lw t0, 0(sp)
+    lw t1, 4(sp)
+    lw t2, 8(sp)
+    addi sp, sp, 12
+    
     jr ra
 
 
@@ -276,7 +310,48 @@ manhattanDistance:
 # a0: cluster index
 
 nearestCluster:
-    # POR IMPLEMENTAR (2a parte)
+    
+    addi sp, sp, -28
+    sw t0, 0(sp)
+    sw t1, 4(sp)
+    sw t2, 8(sp)
+    sw t3, 12(sp)
+    sw t4, 16(sp)
+    sw t5, 20(sp)
+    sw ra, 24(sp)
+    
+    lw t0, k
+    la t1, centroids    # centroid "pointer"
+    add t2, t2, t0    # closest centroid (default is the last)
+    add t3, x0, a0    # save the x coordinate
+    # t4 is going to be the offset / offset stack pointer
+    li t5, 32 # t5 is going to be the smallest distance
+    # default to the biggest distance
+    
+    fornearestCluster: 
+        addi t0, t0, -1    # k--
+        add a0, x0, t3    # set a0 to x
+        slli t4, t0, 3    # offset 
+        add t4, t1, t4    # offset the pointer
+        lw a2, 0(t4)    # centroid x
+        lw a3, 4(t4)    # centroid y
+        jal ra, manhattanDistance    # calculate distance
+        bge a0, t5, pass3
+        add t5, x0, a0    # save de distance
+        add t2, x0, t0    # save the index
+        pass3:
+        bgez t0, fornearestCluster # while (k >= 0)
+    add a0, x0, t2
+    
+    lw t0, 0(sp)
+    lw t1, 4(sp)
+    lw t2, 8(sp)
+    lw t3, 12(sp)
+    lw t4, 16(sp)
+    lw t5, 20(sp)
+    lw ra, 24(sp)
+    addi sp, sp, 28
+    
     jr ra
 
 
