@@ -284,10 +284,11 @@ def str_para_coord(Str):
     
 
 def clear():
-    system("cls")
+    system("clear") # if windows put cls in clear    
     
 
 def comeca_jogo():
+    clear()
     print("\t      ___     _____     _____-----------_____     _____     ___\
           \n\t     .-__*---*_____*---*------| <*º*> |------*---*_____*---*__-.\
           \n\t   ./*        -----                               -----    _   *\.\
