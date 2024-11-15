@@ -4,19 +4,18 @@
 
 #include "stdio.h"
 
+#define MAX_BIN 35
+
 int calc_remainder(int val, int mod) {
-    while (val >= mod){
-        val -= mod;
-    }
+    while (val >= mod) val -= mod;
     return val;
 }
 
 long long int calc_potency(int val, int exp) {
     long long int res = 1;
 
-    if (exp != 0) {
+    if (exp != 0) 
         for (exp; exp != 0; exp--) res *= val;
-    }
 
     return res;
 
@@ -32,15 +31,20 @@ long long int calc_otherkey(long int p, long int q) {
     return n; 
 }
 
-int calc_congroence(int value, long long int mod) {}
+int calc_congroence(int value, long long int mod) {
+
+}
 
 char* dec_to_bin(long long int) {    // 35 bits number
-    char* number[35];
-    int i = 35;
-    for (i; i >= 0; i--) {
-        if (int < coisa) {
+    char* number[MAX_BIN];
+    int i = MAX_BIN;
+    long long int pot;
+
+    for (i; i > 0; i--) {
+        pot = calc_potency( 2, i);
+        if (int < pot) {
             number[i] = 1;
-            int -= coisa;
+            int -= pot;
         }
         else number[i] = 0;
     }
@@ -48,9 +52,12 @@ char* dec_to_bin(long long int) {    // 35 bits number
 }
 
 int main(){
-    int exp = 34;
-    int val = 3;
-    long long int res = calc_potency(val,exp);
-    printf("\n%lld\n",res);
+    
+    long long int val = 19319;
+    int i = MAX_BIN;
+    char* bin = dec_to_bin(val);
+    
+    for (i, i > 0, i--) print("%c",val[i]);
+
     return 0;
 }
